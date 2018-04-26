@@ -12,9 +12,9 @@ const log = require('./plugins/log');
 // 	waitAfterLastRequest: 250,
 // 	chromeFlags: [ '--no-sandbox', '--headless', '--disable-gpu', '--remote-debugging-port=9222', '--hide-scrollbars' ],
 // };
-console.log('Starting with options:', options);
+// console.log('Starting with options:', options);
 
-const server = prerender(options);
+const server = prerender({});
 
 server.use(log);
 server.use(healthcheck('_health'));
