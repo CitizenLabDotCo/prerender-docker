@@ -5,8 +5,12 @@ const stripHtml = require('./plugins/stripHtml');
 const healthcheck = require('./plugins/healthcheck');
 const removePrefetchTags = require('./plugins/removePrefetchTags');
 const log = require('./plugins/log');
+const consoleDebugger = require('./plugins/consoleDebugger');
 
 const options = {
+	pageDoneCheckInterval: process.env.PAGE_DONE_CHECK_INTERVAL || 500,
+	pageLoadTimeout: process.env.PAGE_LOAD_TIMEOUT || 20000,
+	waitAfterLastRequest: process.env.WAIT_AFTER_LAST_REQUEST || 250,
 	chromeFlags: [ '--no-sandbox', '--headless', '--disable-gpu', '--remote-debugging-port=9222', '--hide-scrollbars' ],
 };
 console.log('Starting with options:', options);
@@ -21,7 +25,7 @@ server.use(prerender.removeScriptTags());
 server.use(removePrefetchTags);
 server.use(prerender.httpHeaders());
 if (process.env.DEBUG_PAGES) {
-	server.use(prerender.logger());
+	server.use(consoleDebugger);
 }
 server.use(stripHtml);
 

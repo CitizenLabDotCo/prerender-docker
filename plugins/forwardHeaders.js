@@ -14,13 +14,19 @@ module.exports = {
 	// e.g. localized content. This plugin ensures the headers sent to prerender are also set in
 	// the Chrome instance. Some headers may be blacklisted and will not be forwarded.
 	tabCreated(req, _res, next) {
-		const customHeaders = Object.entries(req.headers).map(header => {
-			const headerKey = header[0];
-			const newHeader = {};
-			// If blocked, set a empty value
-			newHeader[headerKey] = BLACKLISTED.includes(headerKey) ? '' : header[1];
-			return newHeader;
-		})
+		const customHeaders = Object.entries(req.headers)
+			.map(header => {
+				const headerKey = header[0];
+				// If blocked, set a empty value
+				header[1] = BLACKLISTED.includes(headerKey) ? null : header[1];
+				return header;
+			})
+			.filter(header => header[1] !== null)
+			.map(header => {
+				const newHeader = {};
+				newHeader[header[0]] = header[1];
+				return newHeader;
+			})
 			.reduce((a, b) => Object.assign(a, b), {});
 
 		const headersObject = {
