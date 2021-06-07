@@ -1,6 +1,7 @@
 const prerender = require('prerender');
 
 const forwardHeaders = require('./plugins/forwardHeaders');
+const forwardResponseHeaders = require('./plugins/forwardResponseHeaders');
 const stripHtml = require('./plugins/stripHtml');
 const healthcheck = require('./plugins/healthcheck');
 const removePrefetchTags = require('./plugins/removePrefetchTags');
@@ -20,6 +21,7 @@ const server = prerender(options);
 server.use(log);
 server.use(healthcheck('_health'));
 server.use(forwardHeaders);
+server.use(forwardResponseHeaders);
 server.use(prerender.blockResources());
 server.use(prerender.removeScriptTags());
 server.use(removePrefetchTags);

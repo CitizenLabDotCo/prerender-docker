@@ -1,5 +1,5 @@
 // Set all blacklisted headers as lowercase
-const BLACKLISTED = [
+const DISALLOWED = [
 	'user-agent',       // Prerender sets her own user agent, which we dont want to override
 	'host',             // This is set to the host of prerender, so its wrong to forward
 	'accept',           // Let prerender accept everything and handle it
@@ -18,7 +18,7 @@ module.exports = {
 			.map(header => {
 				const headerKey = header[0];
 				// If blocked, set a empty value
-				header[1] = BLACKLISTED.includes(headerKey) ? null : header[1];
+				header[1] = DISALLOWED.includes(headerKey) ? null : header[1];
 				return header;
 			})
 			.filter(header => header[1] !== null)
@@ -32,6 +32,7 @@ module.exports = {
 		const headersObject = {
 			headers : {
 				...customHeaders,
+				'X-User-Agent': req.headers['user-agent'],
 				'X-Prerender' : '1'
 			}
 		};
