@@ -1,21 +1,17 @@
-FROM node:12.13
+FROM node:21.7.3-bookworm
 MAINTAINER Magnet.me
 
 EXPOSE 3000
 
-# Install dumb-init to rape any Chrome zombies
-RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64.deb
-RUN dpkg -i dumb-init_*.deb
-
-# Install Chromium.
+# Install Chromium and dumb-init
+# dumb-init is used to reap zombie Chromium processes
 RUN \
-  wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-  echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list && \
+  wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor > /usr/share/keyrings/google-chrome-archive-keyring.gpg && \
+  echo "deb [signed-by=/usr/share/keyrings/google-chrome-archive-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list && \
   apt-get update && \
-  apt-get install -y google-chrome-stable && \
-  apt-get clean && \
-  rm -rf /var/lib/apt/lists/*
-RUN google-chrome-stable --no-sandbox --version > /opt/chromeVersion
+  apt-get install -y google-chrome-stable dumb-init=1.2.5-2 && \
+  rm -rf /var/lib/apt/lists/* && \
+  google-chrome-stable --no-sandbox --version > /opt/chromeVersion
 
 RUN mkdir -p /usr/src/app
 RUN groupadd -r prerender && useradd -r -g prerender -d /usr/src/app prerender
@@ -30,4 +26,3 @@ RUN yarn --pure-lockfile install
 COPY . /usr/src/app
 
 CMD [ "dumb-init", "yarn", "prod" ]
-
