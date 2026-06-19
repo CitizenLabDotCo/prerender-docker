@@ -12,7 +12,20 @@ const options = {
 	pageDoneCheckInterval: process.env.PAGE_DONE_CHECK_INTERVAL || 500,
 	pageLoadTimeout: process.env.PAGE_LOAD_TIMEOUT || 20000,
 	waitAfterLastRequest: process.env.WAIT_AFTER_LAST_REQUEST || 250,
-	chromeFlags: [ '--no-sandbox', '--headless', '--disable-gpu', '--remote-debugging-port=9222', '--hide-scrollbars' ],
+	chromeFlags: [
+		'--no-sandbox',
+		'--headless',
+		'--disable-gpu',
+		'--remote-debugging-port=9222',
+		'--hide-scrollbars',
+		// WebGL2 support (e.g. ArcGIS maps) in this GPU-less container. Chrome 137+
+		// disables software rendering (SwiftShader) by default, so enable it
+		// explicitly via ANGLE/SwiftShader.
+		'--enable-unsafe-swiftshader',
+		'--use-gl=angle',
+		'--use-angle=swiftshader',
+		'--ignore-gpu-blocklist',
+	],
 };
 console.log('Starting with options:', options);
 
